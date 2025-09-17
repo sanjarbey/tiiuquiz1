@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Tizimi 4-mavzu</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .card {
+            border-radius: 15px;
+            border: none;
+        }
+        .btn-primary {
+            background-color: #0d6efd;
+            border: none;
+        }
+        .btn-success {
+            background-color: #198754;
+            border: none;
+        }
+        .btn-warning {
+            background-color: #ffc107;
+            border: none;
+        }
+        .form-control {
+            border-radius: 10px;
+            padding: 12px;
+        }
+        #questions {
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 15px;
+        }
+        #score {
+            white-space: pre-line;
+        }
+        .university-logo {
+            max-width: 200px;
+            margin-bottom: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .welcome-title {
+            margin-top: 15px;
+            color: #0a58ca;
+        }
+    </style>
+
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+
+        <div id="user-form" class="card p-4 shadow-sm">
+             <!-- University Logo -->
+             <img src="https://tiiu.uz/wp-content/uploads/2020/12/new-logo.png" alt="Toshkent Ijtimoiy Innovatsiya  Universiteti" class="university-logo">
+            <h2 class="text-center">Dasturlashning asosiy tushunchalari. Algoritmlarning xossalari va ifodalashusullari. Dasturlashga kirish. Kompilyator turlari. Identifikator va ularning turlari.
+            </h2>
+            <input type="text" id="surname" class="form-control my-2" placeholder="Familiyangiz" required>
+            <input type="text" id="name" class="form-control my-2" placeholder="Ismingiz" required>
+            <input type="text" id="group" class="form-control my-2" placeholder="Guruhingiz" required>
+            <button class="btn btn-primary w-100 mt-3" onclick="startTest()">Testni boshlash</button>
+        </div>
+        
+        <div id="quiz" class="card p-4 shadow-sm mt-4 d-none">
+            <h2 class="text-center">Test savollari</h2>
+            <div id="questions"></div>
+            <button class="btn btn-success w-100 mt-3" onclick="submitTest()">Natijalarni ko'rish</button>
+        </div>
+        
+        <div id="result" class="card p-4 shadow-sm mt-4 d-none">
+            <h2 class="text-center">Natijalar</h2>
+            <p id="score" class="fs-4 fw-bold text-center text-primary"></p>
+            <!-- <button class="btn btn-warning w-100" onclick="location.reload()">Qayta ishlash</button> -->
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    
+    <script>
+        const questions = [
+    {
+        "q": "Dasturlash nima?",
+        "options": ["a) Matematik hisoblash usuli", "b) Kompyuterda muammoni hal qilish uchun buyruqlar ketma-ketligini yaratish jarayoni", "c) Faqat dastur tilini o‘rganish", "d) Kompyuter o‘yinlarini yaratish"],
+        "a": "b"
+    },
+    {
+        "q": "Dastur nima?",
+        "options": ["a) Formal qoidalar to‘plami", "b) Kompyuter bajarishi mumkin bo‘lgan buyruqlar majmuasi", "c) Ma’lumotlar bazasi", "d) Grafik interfeys"],
+        "a": "b"
+    },
+    {
+        "q": "Dasturlash tiliga misol bo‘ladi:",
+        "options": ["a) Python, C++, Java", "b) Excel, Word", "c) HTML, CSS", "d) Windows, Linux"],
+        "a": "a"
+    },
+    {
+        "q": "Buyruq (operator) nima?",
+        "options": ["a) Kompyuter bajaradigan amaliy harakat", "b) Dastur tilining qoidasi", "c) Grafik interfeys", "d) Xotira turi"],
+        "a": "a"
+    },
+    {
+        "q": "Algoritm nima?",
+        "options": ["a) Muammoni hal qilish uchun aniq tartiblangan buyruqlar ketma-ketligi", "b) Matematik formula", "c) Kompyuter qurilmasi", "d) Grafik tasvir"],
+        "a": "a"
+    },
+    {
+        "q": "Algoritm so‘zi kimning nomi bilan bog‘liq?",
+        "options": ["a) Arximed", "b) Al-Xorazmiy", "c) Evklid", "d) Pifagor"],
+        "a": "b"
+    },
+    {
+        "q": "Algoritmning aniqlilik xossasi nimani bildiradi?",
+        "options": ["a) Qadamlar cheklangan", "b) Har bir qadam aniq va tushunarli bo‘lishi kerak", "c) Faqat matematik hisoblarda ishlatiladi", "d) Faqat kompyuter uchun zarur"],
+        "a": "b"
+    },
+    {
+        "q": "Algoritmning diskretlik xossasi nimani anglatadi?",
+        "options": ["a) Algoritm cheksiz davom etadi", "b) Algoritm alohida qadamlardan tashkil topadi", "c) Algoritm grafik shaklda bo‘ladi", "d) Algoritm kompyuterda ishlaydi"],
+        "a": "b"
+    },
+    {
+        "q": "Algoritmning tugallanganlik xossasi nimani anglatadi?",
+        "options": ["a) Algoritm hech qachon tugamaydi", "b) Algoritm ma’lum natija bilan tugashi kerak", "c) Algoritm faqat sonlar uchun ishlaydi", "d) Algoritm umumiy emas"],
+        "a": "b"
+    },
+    {
+        "q": "Algoritmning umumiylik xossasi nimani anglatadi?",
+        "options": ["a) Algoritm faqat bitta masalani yechadi", "b) Shu turdagi barcha masalalarni yechishi kerak", "c) Algoritm hech qanday natija bermaydi", "d) Algoritm faqat matematik uchun"],
+        "a": "b"
+    },
+    {
+        "q": "Algoritmning samaradorlik xossasi nimani bildiradi?",
+        "options": ["a) Algoritm cheksiz ishlaydi", "b) Algoritmda qadamlar soni cheklangan bo‘lishi kerak", "c) Algoritm natija bermaydi", "d) Algoritm chizmaga ega bo‘lishi kerak"],
+        "a": "b"
+    },
+    {
+        "q": "Algoritmni ifodalash usullaridan biri:",
+        "options": ["a) Sxema yordamida", "b) Internet orqali", "c) Kodlashsiz", "d) Diagrammasiz"],
+        "a": "a"
+    },
+    {
+        "q": "Blok-sxema yordamida algoritmni ifodalash kimlar uchun qulay?",
+        "options": ["a) Tajribali dasturchilar uchun", "b) Yangi o‘rganuvchilar uchun", "c) Matematiklar uchun", "d) Faqat fizika uchun"],
+        "a": "b"
+    },
+    {
+        "q": "Blok-sxemada BOSHLASH va TAMOM elementlari qaysi shaklda tasvirlanadi?",
+        "options": ["a) To‘rtburchak", "b) Ellips", "c) Romb", "d) Uchburchak"],
+        "a": "b"
+    },
+    {
+        "q": "Blok-sxemada hisoblash amallari qaysi shaklda tasvirlanadi?",
+        "options": ["a) To‘rtburchak", "b) Ellips", "c) Romb", "d) Aylana"],
+        "a": "a"
+    },
+    {
+        "q": "Blok-sxemada shart operatori qaysi shaklda ko‘rsatiladi?",
+        "options": ["a) To‘rtburchak", "b) Romb", "c) Aylana", "d) Ellips"],
+        "a": "b"
+    },
+    {
+        "q": "Chiziqli algoritm nima?",
+        "options": ["a) Buyruqlar ketma-ketlikda bajariladigan algoritm", "b) Shartli algoritm", "c) Takrorlanuvchi algoritm", "d) Grafik algoritm"],
+        "a": "a"
+    },
+    {
+        "q": "Tarmoqlanuvchi algoritmda nima mavjud?",
+        "options": ["a) Faqat ketma-ket buyruqlar", "b) Shart va ikki xil yo‘l", "c) Grafik interfeys", "d) Faqat sikllar"],
+        "a": "b"
+    },
+    {
+        "q": "Takrorlanuvchi algoritm qanday ishlaydi?",
+        "options": ["a) Qadamlar cheksiz davom etadi", "b) Buyruqlar bir necha marta bajariladi", "c) Faqat bir marta bajariladi", "d) Natija bermaydi"],
+        "a": "b"
+    },
+    {
+        "q": "Kompilyator nima?",
+        "options": ["a) Dastur kodini mashina tiliga o‘giruvchi dastur", "b) Grafik muharrir", "c) Ma’lumotlar bazasi", "d) Operatsion tizim"],
+        "a": "a"
+    },
+    {
+        "q": "Interpretator nima qiladi?",
+        "options": ["a) Dastur kodini qatorma-qator bajaradi", "b) Dastur kompilyatsiya qiladi", "c) Faqat grafiklarni chizadi", "d) Faqat sonlarni hisoblaydi"],
+        "a": "a"
+    },
+    {
+        "q": "Identifikator nima?",
+        "options": ["a) Kompyuter qurilmasi", "b) O‘zgaruvchilar va funksiyalar uchun beriladigan nom", "c) Faqat sonlar majmuasi", "d) Algoritm turi"],
+        "a": "b"
+    },
+    {
+        "q": "Identifikator yozilishida qaysi belgilar ruxsat etiladi?",
+        "options": ["a) Harf va raqam", "b) Harf, raqam va pastki chiziq (_)", "c) Maxsus belgilar", "d) Faqat raqamlar"],
+        "a": "b"
+    },
+    {
+        "q": "O‘zgaruvchi nima?",
+        "options": ["a) Vaqtincha qiymat saqlovchi xotira bo‘lagi", "b) Doimiy qiymat", "c) Kompyuter protsessori", "d) Grafik element"],
+        "a": "a"
+    },
+    {
+        "q": "Konstantalar nima?",
+        "options": ["a) Qiymati o‘zgarmaydigan ma’lumotlar", "b) Qiymati o‘zgaradigan ma’lumotlar", "c) Xotira bo‘lagi", "d) Funksiya nomi"],
+        "a": "a"
+    },
+    {
+        "q": "Funksiya nima?",
+        "options": ["a) Ma’lum vazifani bajaradigan kod qismi", "b) Grafik interfeys", "c) Doimiy qiymat", "d) O‘zgaruvchi turi"],
+        "a": "a"
+    },
+    {
+        "q": "Algoritmni so‘zlar orqali ifodalash nima?",
+        "options": ["a) Psevdo kod", "b) Natural til orqali yozish", "c) Diagramma", "d) Grafik interfeys"],
+        "a": "b"
+    },
+    {
+        "q": "Algoritmni psevdo kod orqali ifodalashda nima ishlatiladi?",
+        "options": ["a) Rasm", "b) Maxsus ifodalar", "c) Harf", "d) Grafik"],
+        "a": "b"
+    },
+    {
+        "q": "Chiziqli algoritmga misol:",
+        "options": ["a) A=5; B=6; S=A+B", "b) Agar a>b bo‘lsa", "c) For sikli", "d) While sikli"],
+        "a": "a"
+    },
+    {
+        "q": "Shartli algoritmga misol:",
+        "options": ["a) A=5; B=6", "b) Agar a>b bo‘lsa, a ni chiqar", "c) For sikli", "d) While sikli"],
+        "a": "b"
+    },
+    {
+        "q": "Takrorlanuvchi algoritmga misol:",
+        "options": ["a) Juft sonlarni chiqarish", "b) A=5; B=6; S=A+B", "c) Agar a>b", "d) Faqat grafik"],
+        "a": "a"
+    },
+    {
+        "q": "For sikli qanday ishlaydi?",
+        "options": ["a) Old shartli takrorlash", "b) Ketma-ket takrorlash", "c) Cheksiz sikl", "d) Faqat bitta shart"],
+        "a": "b"
+    },
+    {
+        "q": "While sikli qanday ishlaydi?",
+        "options": ["a) Old shart asosida takrorlash", "b) Cheksiz ishlash", "c) Grafik asosida", "d) Faqat tarmoqlanish"],
+        "a": "a"
+    },
+    {
+        "q": "Do-While sikli qanday ishlaydi?",
+        "options": ["a) Shart oxirida tekshiriladi", "b) Shart boshida tekshiriladi", "c) Hech qanday shart yo‘q", "d) Cheksiz davom etadi"],
+        "a": "a"
+    },
+    {
+        "q": "Evklid algoritmi nimani topadi?",
+        "options": ["a) Eng katta umumiy bo‘luvchini", "b) Eng kichik sonni", "c) Tub sonlarni", "d) Faqat yig‘indini"],
+        "a": "a"
+    },
+    {
+        "q": "Algoritm natijaviylik xossasi nimani bildiradi?",
+        "options": ["a) Har doim natija beradi", "b) Hech natija bermaydi", "c) Cheksiz davom etadi", "d) Faqat kompyuterda ishlaydi"],
+        "a": "a"
+    },
+    {
+        "q": "Algoritmni blok-sxema yordamida ifodalashning afzalligi?",
+        "options": ["a) Tushunarli va ko‘rinarli bo‘lishi", "b) Tez bajarilishi", "c) Faqat grafik ishlatilishi", "d) Qisqa bo‘lishi"],
+        "a": "a"
+    },
+    {
+        "q": "Algoritmik tillar orqali ifodalash nima?",
+        "options": ["a) Dasturlash tili orqali yozish", "b) Diagramma orqali yozish", "c) Natural til orqali", "d) Grafik orqali"],
+        "a": "a"
+    },
+    {
+        "q": "Kompilyator va interpretator orasidagi farq?",
+        "options": ["a) Kompilyator kodni butunlay o‘giradi, interpretator qatorma-qator bajaradi", "b) Har ikkalasi ham bir xil", "c) Kompilyator grafik chizadi", "d) Interpretator kodni optimallashtiradi"],
+        "a": "a"
+    },
+    {
+        "q": "Identifikator nomi qanday boshlanishi kerak?",
+        "options": ["a) Harf yoki _ (pastki chiziq)", "b) Raqam", "c) Maxsus belgi", "d) @ belgisi"],
+        "a": "a"
+    },
+    {
+        "q": "Algoritmlarning nechta asosiy turi bor?",
+        "options": ["a) 2", "b) 3", "c) 4", "d) 5"],
+        "a": "b"
+    },
+    {
+        "q": "Chiziqli algoritmda buyruqlar qanday bajariladi?",
+        "options": ["a) Bir nechta yo‘nalishda", "b) Ketma-ketlikda", "c) Tasodifiy tartibda", "d) Hech qanday"],
+        "a": "b"
+    },
+    {
+        "q": "Shartli algoritmning asosiy elementi nima?",
+        "options": ["a) Romb (shart)", "b) To‘rtburchak", "c) Ellips", "d) Doira"],
+        "a": "a"
+    },
+    {
+        "q": "Takrorlanuvchi algoritm qachon tugaydi?",
+        "options": ["a) Shart bajarilganda", "b) Cheksiz davom etadi", "c) Har doim tugamaydi", "d) Faqat bitta bosqichda"],
+        "a": "a"
+    },
+    {
+        "q": "Algoritmni yozishda qaysi elementlar ishlatiladi?",
+        "options": ["a) Buyruqlar, shartlar, sikllar", "b) Faqat buyruqlar", "c) Faqat sikllar", "d) Faqat grafiklar"],
+        "a": "a"
+    },
+    {
+        "q": "Identifikator yozishda taqiqlangan belgilar:",
+        "options": ["a) @, #, %, !", "b) Harf", "c) Raqam", "d) _ (pastki chiziq)"],
+        "a": "a"
+    },
+    {
+        "q": "Funksiya nima uchun ishlatiladi?",
+        "options": ["a) Kodni qayta ishlatish va strukturalash uchun", "b) Faqat grafik chizish uchun", "c) Faqat ma’lumot kiritish uchun", "d) Faqat natija chiqarish uchun"],
+        "a": "a"
+    },
+    {
+        "q": "Algoritm tuzishda birinchi bosqich nima?",
+        "options": ["a) Masalani tahlil qilish", "b) Dastur yozish", "c) Natijani chiqarish", "d) Blok-sxema chizish"],
+        "a": "a"
+    },
+    {
+        "q": "Algoritmni tarmoqlanishi bilan ifodalashga misol?",
+        "options": ["a) Agar son musbat bo‘lsa – musbat, aks holda – manfiy", "b) Sonlarni ketma-ket chiqarish", "c) For sikli", "d) Tub sonni tekshirish"],
+        "a": "a"
+    },
+    {
+        "q": "Algoritmni psevdo kod orqali yozishning maqsadi?",
+        "options": ["a) Oddiy va tushunarli shaklda ifodalash", "b) Grafik chizish", "c) Kompyuterda bajarish", "d) Faqat natija olish"],
+        "a": "a"
+    },
+    {
+        "q": "Algoritmlar nazariyasi qaysi fanlar bilan bog‘liq?",
+        "options": ["a) Matematika va informatika", "b) Faqat fizika", "c) Kimyo", "d) Tarix"],
+        "a": "a"
+    }
+];
+
+
+        function startTest() {
+            document.getElementById('user-form').classList.add('d-none');
+            document.getElementById('quiz').classList.remove('d-none');
+            
+            let questionDiv = document.getElementById('questions');
+            questions.forEach((item, index) => {
+                let qHTML = `<p><strong>${index + 1}. ${item.q}</strong></p>`;
+                item.options.forEach(option => {
+                    qHTML += `<div class='form-check'>
+                                <input class='form-check-input' type='radio' name='q${index}' value='${option.charAt(0)}'>
+                                <label class='form-check-label'>${option}</label>
+                              </div>`;
+                });
+                qHTML += `<hr>`;
+                questionDiv.innerHTML += qHTML;
+            });
+        }
+
+        function submitTest() {
+            let surname = document.getElementById('surname').value.trim();
+            let name = document.getElementById('name').value.trim();
+            let group = document.getElementById('group').value.trim();
+
+            let correct = 0;
+            let total = questions.length;
+            
+            questions.forEach((item, index) => {
+                let selected = document.querySelector(`input[name='q${index}']:checked`);
+                if (selected && selected.value === item.a) {
+                    correct++;
+                }
+            });
+            
+            let score = correct * 2;
+            let grade = "Baho: 2 (O‘tish bali 60)\n 60 - 69 -> 3 baho \n  70 - 89 -> 4 baho\n  90 - 100 -> 5 baho\n";
+            if (score >= 91) grade = "Baho: 5";
+            else if (score >= 71) grade = "Baho: 4";
+            else if (score >= 60) grade = "Baho: 3";
+            
+            // document.getElementById('quiz').classList.add('d-none');
+            // document.getElementById('result').classList.remove('d-none');
+            // document.getElementById('score').innerText = `Siz ${correct} ta to‘g‘ri va ${total - correct} ta noto‘g‘ri javob berdingiz.\nSizning ballingiz: ${score} \n${grade}`;
+
+            let resultText = `F.I.O: ${surname} ${name}\nGuruh: ${group}\n`;
+                resultText += `To‘g‘ri javoblar: ${correct} ta\nNoto‘g‘ri javoblar: ${total - correct} ta\n`;
+                resultText += `Ball: ${score}\n${grade}`;
+
+            // Test sahifasini yashirish va natijalarni ko‘rsatish
+            document.getElementById('quiz').classList.add('d-none');
+            document.getElementById('result').classList.remove('d-none');
+            document.getElementById('score').innerText = resultText;
+
+            // // Natijalarni .txt faylga saqlash
+            // let blob = new Blob([resultText], { type: "text/plain" });
+            // let link = document.createElement("a");
+            // link.href = URL.createObjectURL(blob);
+            // link.download = `${surname}_${name}_natijalar.txt`;
+            // document.body.appendChild(link);
+            // link.click();
+            // document.body.removeChild(link);
+
+
+             // jsPDF yordamida PDF yaratish
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+            // Faylga natijalarni yozish
+                doc.text(`F.I.O: ${surname} ${name}`, 10, 10);
+                doc.text(`Guruh: ${group}`, 10, 20);
+                doc.text(`To‘g‘ri javoblar: ${correct} ta`, 10, 30);
+                doc.text(`Noto‘g‘ri javoblar: ${total - correct} ta`, 10, 40);
+                doc.text(`Ball: ${score}`, 10, 50);
+                doc.text(`${grade}`, 10, 60);
+
+            // PDF faylni saqlash
+                doc.save(`${surname}_${name}_natijalar.pdf`);
+        }
+
+
+
+
+    </script>
+</body>
+</html>
