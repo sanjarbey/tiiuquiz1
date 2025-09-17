@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Tizimi 4-mavzu</title>
+    <title>Test Tizimi 1-mavzu</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
@@ -60,9 +60,9 @@
              <img src="https://tiiu.uz/wp-content/uploads/2020/12/new-logo.png" alt="Toshkent Ijtimoiy Innovatsiya  Universiteti" class="university-logo">
             <h2 class="text-center">Dasturlashning asosiy tushunchalari. Algoritmlarning xossalari va ifodalashusullari. Dasturlashga kirish. Kompilyator turlari. Identifikator va ularning turlari.
             </h2>
-            <input type="text" id="surname" class="form-control my-2" placeholder="Familiyangiz" required placeholder="Bekturdiyev">
-            <input type="text" id="name" class="form-control my-2" placeholder="Ismingiz" required placeholder="Sanjarbek">
-            <input type="text" id="group" class="form-control my-2" placeholder="Guruhingiz " required placeholder="ATT25">
+            <input type="text" id="surname" class="form-control my-2"  required placeholder="Bekturdiyev">
+            <input type="text" id="name" class="form-control my-2"  required placeholder="Sanjarbek">
+            <input type="text" id="group" class="form-control my-2"  required placeholder="ATT25">
             <button class="btn btn-primary w-100 mt-3" onclick="startTest()">Testni boshlash</button>
         </div>
         
@@ -342,6 +342,18 @@
 
 
         function startTest() {
+
+
+            let surname = document.getElementById('surname').value.trim();
+            let name = document.getElementById('name').value.trim();
+            let group = document.getElementById('group').value.trim();
+
+            // Agar bo‘sh maydon bo‘lsa - ogohlantirish beriladi
+            if (surname === "" || name === "" || group === "") {
+                alert("Iltimos, ism, familiya va guruhni to‘liq kiriting!");
+                return; // Testni boshlash to‘xtaydi
+            }
+
             document.getElementById('user-form').classList.add('d-none');
             document.getElementById('quiz').classList.remove('d-none');
             
@@ -363,6 +375,8 @@
             let surname = document.getElementById('surname').value.trim();
             let name = document.getElementById('name').value.trim();
             let group = document.getElementById('group').value.trim();
+
+          
 
             let correct = 0;
             let total = questions.length;
